@@ -48,8 +48,7 @@ header.top {
 
 .forehead {
     font-family: 'Playfair Display', serif;
-    font-size: 27px;
-    letter-spacing: 0.14em;
+    font-size: 32px;
     text-transform: uppercase;
     color: var(--mrchuru);
     display: flex;
