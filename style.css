@@ -3,6 +3,7 @@
     --bg-alt: #EDEFE6;
     --ink: #171E19;
     --ink-soft: #4A5650;
+    --dark-gray: #242424;
     --line: #D8DCCE;
     --card: #FFFFFF;
     --mustard: #C6922C;
@@ -246,7 +247,7 @@ button.primary:focus-visible {
 
 .ga-row .label {
     font-size: 20px;
-    color: var(--ink);
+    color: var(--dark-gray);
     font-weight: bold;
 }
 
@@ -255,7 +256,7 @@ button.primary:focus-visible {
     font-family: 'IBM Plex Mono', monospace;
     font-size: 22px;
     font-weight: 600;
-    color: var(--moss);
+    color: var(--dark-gray);
     white-space: nowrap;
 }
 

@@ -57,7 +57,7 @@ document.getElementById('calcBtn').addEventListener('click', () => {
         const Y = 100 - moisture;
         carbsDM = (X / Y) * 100;
         proteinDM = (protein / (100 - moisture)) * 100;
-        footNote = 'Converted from as-fed values using moisture of ' + moisture + '%.';
+        footNote = 'Converted from as-fed values to DMB using moisture of ' + moisture + '%';
     }
 
     document.getElementById('proteinResult').textContent = formatPct(proteinDM);
@@ -76,14 +76,11 @@ document.getElementById('calcBtn').addEventListener('click', () => {
     const CARB_TIERS = [
         {
             max: 10, cls: 'tier-optimal', label: 'Optimal (species-appropriate)',
-            note: "Mirrors a cat's natural prey diet. Well suited to diabetic cats and weight management."
+            note: "Mirrors a cat's natural prey diet (usually 1–9% DMB). Well suited to diabetic cats and weight management."
         },
         { max: 20, cls: 'tier-moderate', label: 'Moderate / acceptable', note: '' },
         { max: 30, cls: 'tier-high', label: 'High', note: '' },
-        {
-            max: Infinity, cls: 'tier-excessive', label: 'Excessive',
-            note: 'bruh'
-        },
+        { max: Infinity, cls: 'tier-excessive', label: 'Excessive', note: '' },
     ];
     const tier = CARB_TIERS.find(t => carbShown < t.max);
     const tierTagEl = document.getElementById('carbTier');
@@ -91,19 +88,37 @@ document.getElementById('calcBtn').addEventListener('click', () => {
     tierTagEl.className = 'tier-tag ' + tier.cls;
     document.getElementById('carbNote').textContent = tier.note;
 
-    // --- protein reference ladder ---
-    const PROTEIN_RUNGS = [
-        { min: 55, label: 'Feline ancestral diet — the wild standard (~55%)' },
-        { min: 40, label: 'High-protein / active cats (40–50%+)' },
-        { min: 35, label: 'Optimal target — adults & seniors (35–45%)' },
-        { min: 30, label: 'Kittens & reproduction minimum (30%)' },
-        { min: 26, label: 'Adult maintenance minimum (26%)' },
+    // --- protein tier (single, highest-matching) ---
+    const PROTEIN_TIERS = [
+        { min: 55, label: 'Feline ancestral diet (the wild standard)' },
+        { min: 40, label: 'High-protein / active cats' },
+        { min: 35, label: 'Optimal target (adults & seniors)' },
+        { min: 30, label: 'Kittens & reproduction minimum' },
+        { min: 26, label: 'Adult maintenance minimum' },
+        { min: -Infinity, label: 'Below adult maintenance minimum' },
     ];
-    const activeIdx = PROTEIN_RUNGS.findIndex(r => proteinDM >= r.min);
-    const ladderEl = document.getElementById('proteinLadder');
-    ladderEl.innerHTML = PROTEIN_RUNGS.map((r, i) =>
-        `<div class="rung${i === activeIdx ? ' active' : ''}">${r.label}</div>`
-    ).join('') + (activeIdx === -1 ? '<div class="rung active">→ Below adult maintenance minimum (26%)</div>' : '');
+    const proteinTier = PROTEIN_TIERS.find(t => proteinDM >= t.min);
+    const proteinTierEl = document.getElementById('proteinTier');
+    proteinTierEl.textContent = proteinTier.label;
+    proteinTierEl.className = 'tier-tag ' + (proteinDM >= 35 ? 'tier-optimal' : proteinDM >= 26 ? 'tier-moderate' : 'tier-high');
+
+    // --- ash, dry-matter basis ---
+    const ashDM = isDM ? ash : (ash / (100 - moisture)) * 100;
+    document.getElementById('ashResult').textContent = formatPct(ashDM);
+    const ashTierEl = document.getElementById('ashTier');
+    let ashLabel, ashCls;
+    if (ashDM < 6) {
+        ashLabel = 'Low — suited for cats prone to urinary tract issues or stones';
+        ashCls = 'tier-moderate';
+    } else if (ashDM <= 10) {
+        ashLabel = 'Ideal / healthy range';
+        ashCls = 'tier-optimal';
+    } else {
+        ashLabel = 'Too high';
+        ashCls = 'tier-high';
+    }
+    ashTierEl.textContent = ashLabel;
+    ashTierEl.className = 'tier-tag ' + ashCls;
 
     document.getElementById('gaFoot').textContent = footNote;
     gaPanel.hidden = false;
@@ -128,11 +143,11 @@ function renderResults(query) {
         return;
     }
 
-    const matches = BAI_DATA.filter(d =>
-        d.product.toLowerCase().includes(q) ||
-        d.brand.toLowerCase().includes(q) ||
-        d.company.toLowerCase().includes(q)
-    );
+    const tokens = q.split(/\s+/).filter(Boolean);
+    const matches = BAI_DATA.filter(d => {
+        const haystack = (d.brand + ' ' + d.product + ' ' + d.company).toLowerCase();
+        return tokens.every(t => haystack.includes(t));
+    });
 
     if (matches.length === 0) {
         resultCountEl.innerHTML = '<strong>0</strong> matches';
@@ -144,17 +159,17 @@ function renderResults(query) {
         (matches.length > MAX_RESULTS ? ' — showing first ' + MAX_RESULTS : '');
 
     resultsEl.innerHTML = matches.slice(0, MAX_RESULTS).map(d => `
-<div class="result-item">
-    <div class="rmain">
-    <span class="badge">${escapeHtml(d.type)}</span>
-    <p class="rproduct">${escapeHtml(d.product)}</p>
-    <div class="rmeta"><span class="brand">${escapeHtml(d.brand || 'Generic')}</span> · ${escapeHtml(d.company)}</div>
+    <div class="result-item">
+      <div class="rmain">
+        <span class="badge">${escapeHtml(d.type)}</span>
+        <p class="rproduct">${escapeHtml(d.product)}</p>
+        <div class="rmeta"><span class="brand">${escapeHtml(d.brand || 'Generic')}</span> · ${escapeHtml(d.company)}</div>
+      </div>
+      <div class="rside">
+        Valid until ${escapeHtml(d.validity)}
+      </div>
     </div>
-    <div class="rside">
-    ${escapeHtml(d.cfpr)}<br>Valid until ${escapeHtml(d.validity)}
-    </div>
-</div>
-`).join('');
+  `).join('');
 }
 
 searchInput.addEventListener('input', (e) => renderResults(e.target.value));

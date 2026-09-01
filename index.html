@@ -15,7 +15,6 @@
   <div class="page">
 
     <header class="top">
-      <div class="forehead">Mr. Churu Sumshine</div>
       <div class="eyebrow">Wet Food · Reference Tool</div>
       <h1>Cat Food Nutrient Calculator &amp; BAI Registry Search</h1>
       <p>Convert guaranteed-analysis numbers to a dry-matter basis, and check whether a product is on the Philippines' BAI list of registered feed products.</p>
@@ -29,7 +28,7 @@
         <div class="field">
           <label for="basis">Analysis basis</label>
           <select id="basis">
-            <option value="asfed" selected>As Fed Basis</option>
+            <option value="asfed" selected>As Fed/Wet Basis</option>
             <option value="dm">Already Dry Matter</option>
           </select>
         </div>
@@ -66,7 +65,7 @@
         <div class="ga-body">
           <div class="ga-row" style="align-items:flex-start;">
             <div class="label">Protein
-              <div class="protein-ladder" id="proteinLadder"></div>
+              <div><span class="tier-tag" id="proteinTier"></span></div>
             </div>
             <div class="value" id="proteinResult">—</div>
           </div>
@@ -76,6 +75,12 @@
               <div class="ga-note" id="carbNote"></div>
             </div>
             <div class="value" id="carbResult">—</div>
+          </div>
+          <div class="ga-row" style="align-items:flex-start;">
+            <div class="label">Crude Ash
+              <div><span class="tier-tag" id="ashTier"></span></div>
+            </div>
+            <div class="value" id="ashResult">—</div>
           </div>
           <div class="ga-foot" id="gaFoot"></div>
         </div>
