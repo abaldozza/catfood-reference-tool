@@ -82,7 +82,7 @@ document.getElementById('calcBtn').addEventListener('click', () => {
         { max: 30, cls: 'tier-high', label: 'High', note: '' },
         { max: Infinity, cls: 'tier-excessive', label: 'Excessive', note: '' },
     ];
-    const tier = CARB_TIERS.find(t => carbShown < t.max);
+    const tier = CARB_TIERS.find(t => carbShown <= t.max);
     const tierTagEl = document.getElementById('carbTier');
     tierTagEl.textContent = tier.label;
     tierTagEl.className = 'tier-tag ' + tier.cls;
