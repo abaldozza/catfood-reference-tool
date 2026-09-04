@@ -29,8 +29,8 @@
         <div class="field">
           <label for="basis">Analysis basis</label>
           <select id="basis">
-            <option value="asfed" selected>As Fed/Wet Basis</option>
-            <option value="dm">Already Dry Matter</option>
+            <option value="asfed" selected>As Fed (values as printed on label)</option>
+            <option value="dm">Already Dry Matter (moisture-free)</option>
           </select>
         </div>
       </div>
@@ -56,6 +56,15 @@
           <label for="moisture">Moisture %</label>
           <input type="number" id="moisture" min="0" step="0.1" inputmode="decimal">
         </div>
+        <div class="field">
+          <label for="calcium">Calcium % <span style="text-transform:none;">(optional - if you want to know Ca:P ratio)</span></label>
+          <input type="number" id="calcium" min="0" step="0.01" inputmode="decimal">
+        </div>
+        <div class="field">
+          <label for="phosphorus">Phosphorus % <span style="text-transform:none;">(optional - if you want to know Ca:P ratio)</span></label>
+          <input type="number" id="phosphorus" min="0" step="0.01" inputmode="decimal">
+        </div>
+
       </div>
 
       <button class="primary" id="calcBtn">Calculate</button>
@@ -78,10 +87,11 @@
             <div class="value" id="carbResult">—</div>
           </div>
           <div class="ga-row" style="align-items:flex-start;">
-            <div class="label">Crude Ash
-              <div><span class="tier-tag" id="ashTier"></span></div>
+            <div class="label">Ca:P Ratio
+              <div><span class="tier-tag" id="capTier"></span></div>
+              <div class="ga-note" id="capNote"></div>
             </div>
-            <div class="value" id="ashResult">—</div>
+            <div class="value" id="capRatioResult">—</div>
           </div>
           <div class="ga-foot" id="gaFoot"></div>
         </div>
@@ -99,7 +109,23 @@
       <div class="results" id="results"></div>
     </section>
 
-    <footer>Calculations are estimates based on guaranteed-analysis label values, not lab assay results. BAI list current as of March 2026.</footer>
+    <section class="info-section">
+      <h3>Ca:P Ratio Guidance &amp; Sources</h3>
+      <p>Ca:P ratio guidance is based on AAFCO/FEDIAF adult maintenance recommendations and feline feeding studies. Ranges shown reflect adult maintenance guidance — kitten/growth foods have a narrower recommended range (1:1–1.5:1 per FEDIAF).</p>
+      <ul>
+        <li>Laflamme D, et al. A review of phosphorus homeostasis and the impact of different types and amounts of dietary phosphate on metabolism and renal health in cats. <em>J Vet Intern Med.</em> 2020;34(6):2187-2196.</li>
+        <li>Coltherd JC, et al. Dietary calcium to phosphorus ratio affects postprandial phosphorus concentrations in feline plasma. <em>Br J Nutr.</em> 2022;128(9):1689-1699.</li>
+        <li>FEDIAF Nutritional Guidelines for Complete and Complementary Pet Food for Cats and Dogs.</li>
+        <li>AAFCO Cat Food Nutrient Profiles.</li>
+      </ul>
+
+      <div class="disclaimer">
+        <strong>Important:</strong> This tool is provided for educational and reference purposes only and is not a substitute for professional veterinary advice. Calculations are estimates based on guaranteed-analysis label values, not laboratory assay results, and nutrient needs — including calcium, phosphorus, and their ratio — vary with a cat's health status, life stage, body condition, and activity level. Ca:P ranges shown reflect adult maintenance guidance and do not account for kittens,
+        pregnant/nursing cats, or cats on a therapeutic diet, who may need different ratios. Always consult your veterinarian before making changes to your cat's diet, especially if your cat has an existing health condition.
+      </div>
+    </section>
+
+    <footer>BAI list current as of March 2026.</footer>
   </div>
 
   <script src="script.js"></script>

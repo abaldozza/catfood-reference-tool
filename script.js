@@ -57,7 +57,7 @@ document.getElementById('calcBtn').addEventListener('click', () => {
         const Y = 100 - moisture;
         carbsDM = (X / Y) * 100;
         proteinDM = (protein / (100 - moisture)) * 100;
-        footNote = 'Converted from as-fed values to DMB using moisture of ' + moisture + '%';
+        footNote = 'Converted from as-fed values using moisture of ' + moisture + '%.';
     }
 
     document.getElementById('proteinResult').textContent = formatPct(proteinDM);
@@ -82,7 +82,7 @@ document.getElementById('calcBtn').addEventListener('click', () => {
         { max: 30, cls: 'tier-high', label: 'High', note: '' },
         { max: Infinity, cls: 'tier-excessive', label: 'Excessive', note: '' },
     ];
-    const tier = CARB_TIERS.find(t => carbShown <= t.max);
+    const tier = CARB_TIERS.find(t => carbShown < t.max);
     const tierTagEl = document.getElementById('carbTier');
     tierTagEl.textContent = tier.label;
     tierTagEl.className = 'tier-tag ' + tier.cls;
@@ -102,23 +102,51 @@ document.getElementById('calcBtn').addEventListener('click', () => {
     proteinTierEl.textContent = proteinTier.label;
     proteinTierEl.className = 'tier-tag ' + (proteinDM >= 35 ? 'tier-optimal' : proteinDM >= 26 ? 'tier-moderate' : 'tier-high');
 
-    // --- ash, dry-matter basis ---
-    const ashDM = isDM ? ash : (ash / (100 - moisture)) * 100;
-    document.getElementById('ashResult').textContent = formatPct(ashDM);
-    const ashTierEl = document.getElementById('ashTier');
-    let ashLabel, ashCls;
-    if (ashDM < 6) {
-        ashLabel = 'Low — suited for cats prone to urinary tract issues or stones';
-        ashCls = 'tier-moderate';
-    } else if (ashDM <= 10) {
-        ashLabel = 'Ideal / healthy range';
-        ashCls = 'tier-optimal';
+    // --- Ca:P ratio (basis-independent — moisture cancels out) ---
+    const calcium = fieldVal('calcium');
+    const phosphorus = fieldVal('phosphorus');
+    const capRatioEl = document.getElementById('capRatioResult');
+    const capTierEl = document.getElementById('capTier');
+    const capNoteEl = document.getElementById('capNote');
+
+    if (calcium !== null && phosphorus !== null) {
+        if (phosphorus === 0) {
+            capRatioEl.textContent = 'N/A (P is 0%)';
+            capTierEl.textContent = '';
+            capNoteEl.textContent = '';
+        } else {
+            const capRatio = calcium / phosphorus;
+            capRatioEl.textContent = capRatio.toFixed(2) + ':1';
+
+            // --- Ca:P tier, based on Coltherd et al. 2022 (Br J Nutr) ---
+            const CAP_TIERS = [
+                {
+                    max: 1.0, cls: 'tier-high', label: 'Avoid',
+                    note: 'Below the recommended minimum for adult cats; linked to renal injury risk.'
+                },
+                {
+                    max: 1.6, cls: 'tier-moderate', label: 'Borderline',
+                    note: 'Within guidelines for adult cats, sits in the gap between not harmful and shown to help.'
+                },
+                {
+                    max: 2.2, cls: 'tier-optimal', label: 'Favorable',
+                    note: 'Within the recommended range for adult cats.'
+                },
+                {
+                    max: Infinity, cls: 'tier-high', label: 'Caution',
+                    note: 'Above the recommended range for adult cats.'
+                },
+            ];
+            const capTier = CAP_TIERS.find(t => capRatio <= t.max);
+            capTierEl.textContent = capTier.label;
+            capTierEl.className = 'tier-tag ' + capTier.cls;
+            capNoteEl.textContent = capTier.note;
+        }
     } else {
-        ashLabel = 'Too high';
-        ashCls = 'tier-high';
+        capRatioEl.textContent = '—';
+        capTierEl.textContent = '';
+        capNoteEl.textContent = '';
     }
-    ashTierEl.textContent = ashLabel;
-    ashTierEl.className = 'tier-tag ' + ashCls;
 
     document.getElementById('gaFoot').textContent = footNote;
     gaPanel.hidden = false;
