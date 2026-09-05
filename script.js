@@ -125,11 +125,11 @@ document.getElementById('calcBtn').addEventListener('click', () => {
                     note: 'Below the recommended minimum for adult cats; linked to renal injury risk.'
                 },
                 {
-                    max: 1.6, cls: 'tier-moderate', label: 'Borderline',
-                    note: 'Within guidelines for adult cats, sits in the gap between not harmful and shown to help.'
+                    max: 1.6, cls: 'tier-moderate', label: 'Okay',
+                    note: 'Within guidelines for adult cats.'
                 },
                 {
-                    max: 2.2, cls: 'tier-optimal', label: 'Favorable',
+                    max: 2.2, cls: 'tier-optimal', label: 'Good',
                     note: 'Within the recommended range for adult cats.'
                 },
                 {
